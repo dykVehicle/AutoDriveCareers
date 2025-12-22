@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useJobStore } from '../stores/jobs';
 import { useRouter } from 'vue-router';
-import { ArrowRight, Cpu, Connection } from '@element-plus/icons-vue';
-import { onMounted, ref } from 'vue';
+import { ArrowRight, Cpu } from '@element-plus/icons-vue';
+import { ref } from 'vue';
 
 const jobStore = useJobStore();
 const router = useRouter();
@@ -15,162 +15,129 @@ const goToCategory = (category: string) => {
   router.push({ path: '/jobs', query: { q: category } });
 };
 
-// Typing effect
-const displayText = ref('');
-const fullText = "连接智能驾驶的未来人才";
-const typeSpeed = 100;
+// Parallax effect
+const mouseX = ref(0);
+const mouseY = ref(0);
 
-onMounted(() => {
-  let i = 0;
-  const timer = setInterval(() => {
-    if (i < fullText.length) {
-      displayText.value += fullText.charAt(i);
-      i++;
-    } else {
-      clearInterval(timer);
-    }
-  }, typeSpeed);
-});
+const handleMouseMove = (e: MouseEvent) => {
+  mouseX.value = (e.clientX / window.innerWidth - 0.5) * 20;
+  mouseY.value = (e.clientY / window.innerHeight - 0.5) * 20;
+};
 </script>
 
 <template>
-  <div class="font-sans overflow-hidden">
-    <!-- Hero Section with Moving Grid -->
-    <section class="relative min-h-[700px] flex items-center justify-center overflow-hidden">
-      <!-- Cyber Grid Background -->
-      <div class="absolute inset-0 bg-slate-950 perspective-grid">
-        <div class="grid-floor"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950 z-10"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-slate-950 via-transparent to-slate-950 z-10"></div>
-      </div>
-
-      <!-- Floating Particles -->
-      <div class="absolute inset-0 z-0">
-        <div v-for="n in 20" :key="n" 
-             class="absolute w-1 h-1 bg-cyan-500 rounded-full animate-float"
-             :style="{ 
-               left: `${Math.random() * 100}%`, 
-               top: `${Math.random() * 100}%`,
-               animationDelay: `${Math.random() * 5}s`,
-               opacity: Math.random()
-             }">
-        </div>
+  <div class="font-sans overflow-hidden" @mousemove="handleMouseMove">
+    <!-- Hero Section -->
+    <section class="relative min-h-[700px] flex items-center justify-center overflow-hidden bg-slate-50">
+      
+      <!-- Parallax Background Elements -->
+      <div class="absolute inset-0 pointer-events-none">
+        <!-- Big Circle -->
+        <div class="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-3xl transition-transform duration-100"
+             :style="{ transform: `translate(${mouseX * -1}px, ${mouseY * -1}px)` }"></div>
+        <!-- Small Circle -->
+        <div class="absolute bottom-[10%] left-[-5%] w-[400px] h-[400px] bg-orange-100/50 rounded-full blur-3xl transition-transform duration-100"
+             :style="{ transform: `translate(${mouseX * 1.5}px, ${mouseY * 1.5}px)` }"></div>
       </div>
 
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-20">
-        <div class="inline-block px-4 py-1 mb-6 rounded-full border border-cyan-500/30 bg-cyan-900/20 backdrop-blur-sm text-cyan-400 font-mono text-xs tracking-widest animate-pulse">
-          SYSTEM_STATUS: ONLINE
+        
+        <div class="inline-flex items-center px-4 py-2 mb-8 rounded-full bg-white shadow-sm border border-slate-100 text-slate-600 text-sm font-medium animate-fade-in-up">
+          <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+          正在招聘：150+ 岗位在线
         </div>
         
-        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-tight text-white drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">
-          {{ displayText }}<span class="animate-blink">_</span>
+        <h1 class="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-tight text-slate-900 drop-shadow-sm">
+          连接<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">智能驾驶</span><br>
+          的未来人才
         </h1>
         
-        <p class="text-xl md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-          [ 汇聚全球顶尖自动驾驶企业，连接 <span class="text-cyan-400 font-bold">500+</span> 高薪技术岗位 ]
+        <p class="text-xl md:text-2xl text-slate-500 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
+          让找工作像自动驾驶一样 <span class="font-bold text-slate-800">平滑</span>、<span class="font-bold text-slate-800">高效</span>、<span class="font-bold text-slate-800">精准</span>。
         </p>
         
         <div class="flex flex-col sm:flex-row justify-center gap-6">
           <router-link to="/jobs">
-            <button class="group relative px-10 py-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold tracking-widest transition-all skew-x-[-10deg] hover:shadow-[0_0_20px_rgba(6,182,212,0.6)]">
-              <span class="block skew-x-[10deg] flex items-center">
-                INITIATE_SEARCH <el-icon class="ml-2 group-hover:translate-x-1 transition-transform"><ArrowRight /></el-icon>
-              </span>
+            <button class="group px-10 py-4 bg-slate-900 text-white rounded-full font-bold text-lg hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center justify-center mx-auto">
+              开始探索
+              <div class="ml-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-slate-900 group-hover:translate-x-1 transition-transform">
+                <el-icon><ArrowRight /></el-icon>
+              </div>
             </button>
           </router-link>
-          <button class="group relative px-10 py-4 bg-transparent border border-cyan-500/50 hover:border-cyan-400 text-cyan-400 font-bold tracking-widest transition-all skew-x-[-10deg] hover:bg-cyan-900/20">
-             <span class="block skew-x-[10deg]">DEPLOY_JOB</span>
-          </button>
         </div>
 
-        <!-- HUD Stats -->
-        <div class="mt-20 flex justify-center gap-4 md:gap-12 text-center">
-          <div v-for="(stat, index) in [
-            { label: 'ACTIVE_JOBS', value: '158' },
-            { label: 'COMPANIES', value: '42' },
-            { label: 'AVG_SALARY', value: '35K' }
-          ]" :key="index" class="p-6 bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-lg min-w-[140px] hover:border-cyan-500/50 transition-colors group">
-            <div class="text-3xl font-bold text-white font-mono group-hover:text-cyan-400 transition-colors">{{ stat.value }}</div>
-            <div class="text-xs text-slate-500 mt-2 font-mono tracking-widest">{{ stat.label }}</div>
+        <!-- Float Cards (Decorative) -->
+        <div class="absolute top-1/2 left-10 hidden xl:block animate-float-slow">
+          <div class="bg-white p-4 rounded-2xl shadow-xl border border-slate-100 rotate-[-6deg]">
+            <div class="text-3xl font-bold text-blue-600">35K+</div>
+            <div class="text-xs text-slate-400">平均月薪</div>
+          </div>
+        </div>
+        <div class="absolute bottom-20 right-20 hidden xl:block animate-float-delayed">
+          <div class="bg-white p-4 rounded-2xl shadow-xl border border-slate-100 rotate-[6deg]">
+            <div class="flex -space-x-2">
+              <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white"></div>
+              <div class="w-8 h-8 rounded-full bg-slate-300 border-2 border-white"></div>
+              <div class="w-8 h-8 rounded-full bg-slate-400 border-2 border-white"></div>
+            </div>
+            <div class="text-xs text-slate-400 mt-2">50+ 合作企业</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Categories Dashboard -->
-    <section class="py-24 bg-slate-950 relative">
+    <!-- Categories -->
+    <section class="py-24 bg-white relative z-10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center mb-12">
-          <div class="w-2 h-8 bg-cyan-500 mr-4 shadow-[0_0_10px_#06b6d4]"></div>
-          <h2 class="text-3xl font-bold text-white font-mono">SECTORS_OVERVIEW</h2>
+        <div class="text-center mb-16">
+          <h2 class="text-3xl font-bold text-slate-900 mb-4">热门投递领域</h2>
+          <div class="w-16 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
         </div>
         
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div v-for="cat in categories" :key="cat" 
-               class="group relative p-6 bg-slate-900/50 border border-slate-800 hover:border-cyan-500 hover:bg-slate-800/80 transition-all duration-300 cursor-pointer overflow-hidden"
+               class="group p-8 bg-slate-50 rounded-3xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-xl transition-all duration-300 cursor-pointer text-center"
                @click="goToCategory(cat)">
-            <!-- Corner Accents -->
-            <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            
-            <div class="mb-4 text-cyan-600 group-hover:text-cyan-400 transition-colors">
-              <el-icon :size="24"><Cpu /></el-icon>
+            <div class="mb-6 w-16 h-16 mx-auto bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+              <el-icon :size="28"><Cpu /></el-icon>
             </div>
-            <h3 class="text-lg font-bold text-slate-300 group-hover:text-white transition-colors">{{ cat }}</h3>
-            <div class="mt-2 h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-              <div class="h-full bg-cyan-500 w-[40%] group-hover:w-[80%] transition-all duration-500"></div>
-            </div>
+            <h3 class="text-lg font-bold text-slate-800">{{ cat }}</h3>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Featured Jobs Scanner -->
-    <section class="py-24 bg-slate-900 border-t border-slate-800">
+    <!-- Featured Jobs -->
+    <section class="py-24 bg-slate-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-end mb-12">
-          <div class="flex items-center">
-             <div class="w-2 h-8 bg-purple-500 mr-4 shadow-[0_0_10px_#a855f7]"></div>
-             <h2 class="text-3xl font-bold text-white font-mono">PRIORITY_TARGETS</h2>
-          </div>
-          <router-link to="/jobs" class="text-cyan-400 hover:text-cyan-300 font-mono text-sm flex items-center group">
-            [ VIEW_ALL ] <el-icon class="ml-2 group-hover:rotate-45 transition-transform"><Connection /></el-icon>
+          <h2 class="text-3xl font-bold text-slate-900">精选职位</h2>
+          <router-link to="/jobs" class="flex items-center text-blue-600 font-bold hover:underline">
+            查看全部 <el-icon class="ml-1"><ArrowRight /></el-icon>
           </router-link>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div v-for="job in jobStore.jobs.slice(0, 6)" :key="job.id" 
-               class="bg-slate-950 p-6 border border-slate-800 hover:border-purple-500/50 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all duration-300 group relative">
-            <div class="absolute top-0 right-0 p-2 opacity-50 group-hover:opacity-100">
-              <div class="text-[10px] text-purple-500 font-mono">ID: {{ 2049 + job.id }}</div>
-            </div>
-            
-            <div class="flex items-start gap-4 mb-6">
-              <div class="w-10 h-10 bg-slate-800 rounded flex items-center justify-center text-xs font-bold text-slate-400 group-hover:bg-purple-900/20 group-hover:text-purple-400 transition-colors">
+               class="bg-white p-8 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group border border-slate-100">
+            <div class="flex justify-between items-start mb-6">
+              <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-xl font-bold text-slate-400">
                 {{ job.company[0] }}
               </div>
-              <div>
-                <h3 class="text-lg font-bold text-slate-200 group-hover:text-purple-400 transition-colors line-clamp-1">
-                  {{ job.title }}
-                </h3>
-                <p class="text-slate-500 text-sm mt-1">{{ job.company }}</p>
-              </div>
-            </div>
-
-            <div class="flex flex-wrap gap-2 mb-6">
-              <span v-for="tag in job.tags.slice(0, 2)" :key="tag" 
-                    class="px-2 py-1 bg-slate-900 text-slate-400 text-xs border border-slate-700 font-mono">
-                {{ tag }}
-              </span>
+              <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold">{{ job.salary }}</span>
             </div>
             
-            <div class="flex items-center justify-between mt-auto">
-              <span class="text-white font-bold font-mono">{{ job.salary }}</span>
-              <router-link :to="`/jobs/${job.id}`">
-                <button class="px-4 py-1.5 text-xs bg-purple-600/20 text-purple-400 border border-purple-500/30 hover:bg-purple-600 hover:text-white transition-colors uppercase tracking-wider">
-                  Details
-                </button>
-              </router-link>
+            <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+              {{ job.title }}
+            </h3>
+            <p class="text-slate-500 text-sm mb-6">{{ job.company }} · {{ job.location }}</p>
+
+            <div class="flex flex-wrap gap-2">
+              <span v-for="tag in job.tags.slice(0, 2)" :key="tag" 
+                    class="px-3 py-1 bg-slate-50 text-slate-600 rounded-lg text-xs font-medium">
+                {{ tag }}
+              </span>
             </div>
           </div>
         </div>
@@ -180,46 +147,24 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.perspective-grid {
-  perspective: 1000px;
-  background-color: #020617;
+.animate-float-slow {
+  animation: float 6s ease-in-out infinite;
 }
-
-.grid-floor {
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  top: -50%;
-  left: -50%;
-  background-image: 
-    linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
-  transform: rotateX(60deg);
-  animation: grid-move 20s linear infinite;
-}
-
-@keyframes grid-move {
-  0% { transform: rotateX(60deg) translateY(0); }
-  100% { transform: rotateX(60deg) translateY(50px); }
+.animate-float-delayed {
+  animation: float 7s ease-in-out infinite 1s;
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); opacity: 0; }
-  50% { opacity: 0.8; }
-  100% { transform: translateY(-100px); opacity: 0; }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
 }
 
-.animate-float {
-  animation: float 10s infinite ease-in-out;
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
 }
 
-.animate-blink {
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>

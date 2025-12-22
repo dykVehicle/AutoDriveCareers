@@ -13,7 +13,7 @@ const updateCursor = (e: MouseEvent) => {
 
 const handleMouseEnter = (e: MouseEvent) => {
   const target = e.target as HTMLElement;
-  if (target.tagName === 'A' || target.tagName === 'BUTTON' || target.closest('a') || target.closest('button')) {
+  if (target.closest('a') || target.closest('button') || target.tagName === 'INPUT') {
     isHovering.value = true;
   }
 };
@@ -29,8 +29,6 @@ onMounted(() => {
   window.addEventListener('mousemove', updateCursor);
   window.addEventListener('mousedown', handleMouseDown);
   window.addEventListener('mouseup', handleMouseUp);
-  
-  // Attach listeners to clickable elements dynamically
   document.body.addEventListener('mouseover', handleMouseEnter);
   document.body.addEventListener('mouseout', handleMouseLeave);
 });
@@ -46,95 +44,43 @@ onUnmounted(() => {
 
 <template>
   <div 
-    class="sensor-cursor hidden md:block"
+    class="drone-cursor hidden md:block"
     :class="{ 'is-hovering': isHovering, 'is-clicking': isClicking }"
-    :style="{ left: `${cursorX}px`, top: `${cursorY}px` }"
+    :style="{ transform: `translate(${cursorX}px, ${cursorY}px)` }"
   >
-    <!-- Core -->
-    <div class="cursor-dot"></div>
-    <!-- Radar Sweep -->
-    <div class="cursor-ring"></div>
-    <!-- Target Lock -->
-    <div class="cursor-corners"></div>
+    <!-- Drone Body -->
+    <div class="relative -translate-x-1/2 -translate-y-1/2">
+      <!-- Main Core -->
+      <div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm relative z-10 transition-all duration-300"
+           :class="isHovering ? 'scale-150 bg-orange-500' : ''"></div>
+      
+      <!-- Rotors (Decorative) -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 border border-slate-300 rounded-full animate-spin-slow opacity-50"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 border border-blue-200 rounded-full animate-ping opacity-30" v-if="isClicking"></div>
+      
+      <!-- Label -->
+      <div class="absolute left-6 top-0 bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 transition-opacity"
+           :class="isHovering ? 'opacity-100' : ''">
+        TARGET_LOCKED
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.sensor-cursor {
+.drone-cursor {
   position: fixed;
+  top: 0;
+  left: 0;
   pointer-events: none;
   z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
-  mix-blend-mode: exclusion;
+  will-change: transform;
 }
 
-.cursor-dot {
-  width: 8px;
-  height: 8px;
-  background: #00ffff;
-  border-radius: 50%;
-  box-shadow: 0 0 10px #00ffff;
-  transition: transform 0.2s;
-}
-
-.cursor-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  border: 1px dashed rgba(0, 255, 255, 0.3);
-  border-radius: 50%;
-  animation: spin 4s linear infinite;
-  transition: all 0.3s;
-}
-
-.cursor-corners {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  width: 50px;
-  height: 50px;
-  border: 2px solid transparent;
-  transition: all 0.3s;
-}
-
-/* Hover State */
-.is-hovering .cursor-dot {
-  transform: scale(0.5);
-  background: #ff00ff;
-  box-shadow: 0 0 10px #ff00ff;
-}
-
-.is-hovering .cursor-ring {
-  width: 60px;
-  height: 60px;
-  border-color: rgba(255, 0, 255, 0.5);
-  background: rgba(255, 0, 255, 0.05);
-  animation-duration: 1s;
-}
-
-.is-hovering .cursor-corners {
-  transform: translate(-50%, -50%) scale(1);
-  border-color: #ff00ff;
-  clip-path: polygon(
-    0 0, 30% 0, 30% 2px, 2px 2px, 2px 30%, 0 30%,
-    0 100%, 30% 100%, 30% calc(100% - 2px), 2px calc(100% - 2px), 2px 70%, 0 70%,
-    100% 0, 70% 0, 70% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 30%, 100% 30%,
-    100% 100%, 70% 100%, 70% calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 70%, 100% 70%
-  );
-}
-
-/* Click State */
-.is-clicking .cursor-ring {
-  transform: translate(-50%, -50%) scale(0.8);
-  background: rgba(0, 255, 255, 0.2);
-}
-
-@keyframes spin {
+@keyframes spin-slow {
   to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
 }
 </style>
