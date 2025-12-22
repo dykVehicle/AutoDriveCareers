@@ -3,27 +3,31 @@ import { RouterView, RouterLink, useRoute } from 'vue-router'
 import { computed } from 'vue'
 import SensorCursor from './components/SensorCursor.vue';
 import ScrollCar from './components/ScrollCar.vue';
+import HolidayOverlay from './components/HolidayOverlay.vue';
+import ClickSpark from './components/ClickSpark.vue';
 
 const route = useRoute()
 const isAuthPage = computed(() => ['/login'].includes(route.path))
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-800 selection:bg-blue-200 selection:text-blue-900 cursor-none">
+  <div class="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-800 selection:bg-purple-200 selection:text-purple-900 cursor-none">
     <SensorCursor />
     <ScrollCar />
+    <HolidayOverlay />
+    <ClickSpark />
     
-    <header v-if="!isAuthPage" class="fixed w-full z-50 transition-all duration-300 backdrop-blur-xl bg-white/70 border-b border-white/50 shadow-sm">
+    <header v-if="!isAuthPage" class="fixed w-full z-50 transition-all duration-300 backdrop-blur-xl bg-white/60 border-b border-white/40 shadow-sm">
       <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <div class="flex items-center">
           <RouterLink to="/" class="flex items-center space-x-3 group">
-            <div class="relative w-10 h-10 flex items-center justify-center bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-xl shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform">
+            <div class="relative w-10 h-10 flex items-center justify-center bg-gradient-to-tr from-blue-600 via-purple-600 to-pink-500 rounded-xl shadow-lg shadow-purple-500/30 group-hover:scale-110 group-hover:rotate-3 transition-transform">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <span class="text-xl font-bold tracking-tight text-slate-800 font-sans">
-              AutoDrive<span class="text-blue-600">Careers</span>
+            <span class="text-xl font-bold tracking-tight text-slate-800 font-sans group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-pink-600 transition-colors">
+              AutoDrive<span class="text-blue-600 group-hover:text-current">Careers</span>
             </span>
           </RouterLink>
           
@@ -35,11 +39,11 @@ const isAuthPage = computed(() => ['/login'].includes(route.path))
         
         <div class="flex items-center space-x-4">
           <RouterLink to="/login">
-            <button class="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+            <button class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors font-bold">
               登录
             </button>
           </RouterLink>
-          <button class="px-6 py-2.5 bg-slate-900 text-white rounded-full font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+          <button class="px-6 py-2.5 bg-slate-900 text-white rounded-full font-bold text-sm shadow-lg hover:shadow-2xl hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 transition-all border-none">
             企业入驻
           </button>
         </div>
@@ -120,9 +124,9 @@ const isAuthPage = computed(() => ['/login'].includes(route.path))
 
 /* Nav Item Styling */
 .nav-item {
-  @apply px-4 py-2 text-sm font-medium text-slate-500 hover:text-blue-600 transition-all rounded-lg hover:bg-slate-50;
+  @apply px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-all rounded-full hover:bg-slate-50;
 }
 .nav-item.active {
-  @apply text-blue-600 bg-blue-50 font-bold;
+  @apply text-blue-600 bg-blue-50;
 }
 </style>
