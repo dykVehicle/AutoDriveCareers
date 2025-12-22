@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useJobStore } from '../stores/jobs';
-import { Location, Money, Suitcase, School } from '@element-plus/icons-vue';
+import { Location, Suitcase, School } from '@element-plus/icons-vue';
 
 const route = useRoute();
 const jobStore = useJobStore();
