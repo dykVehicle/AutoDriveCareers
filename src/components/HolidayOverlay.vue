@@ -35,14 +35,16 @@ class Particle {
   speed: number;
   wind: number;
   type: string;
+  opacity: number;
 
   constructor(w: number, h: number, type: string) {
     this.x = Math.random() * w;
     this.y = Math.random() * h;
-    this.radius = Math.random() * 3 + 1;
-    this.speed = Math.random() * 1 + 0.5;
-    this.wind = Math.random() * 0.5 - 0.25;
+    this.radius = Math.random() * 4 + 2;
+    this.speed = Math.random() * 1.5 + 0.5;
+    this.wind = Math.random() * 0.8 - 0.4;
     this.type = type;
+    this.opacity = Math.random() * 0.6 + 0.4;
   }
 
   update(h: number) {
@@ -57,8 +59,11 @@ class Particle {
   draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fillStyle = this.type === 'christmas' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 215, 0, 0.8)';
+    ctx.fillStyle = this.type === 'christmas' ? `rgba(255, 255, 255, ${this.opacity})` : `rgba(255, 215, 0, ${this.opacity})`;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = this.type === 'christmas' ? '#ffffff' : '#ffd700';
     ctx.fill();
+    ctx.shadowBlur = 0;
   }
 }
 
@@ -72,7 +77,7 @@ const initParticles = () => {
   canvasRef.value.height = h;
   
   particles.length = 0;
-  const count = window.innerWidth < 768 ? 30 : 100; // Less particles on mobile
+  const count = window.innerWidth < 768 ? 40 : 120; // More particles for better effect
   
   for (let i = 0; i < count; i++) {
     particles.push(new Particle(w, h, currentHoliday.value || 'christmas'));
@@ -151,18 +156,18 @@ onUnmounted(() => {
 
     <!-- Christmas Elements -->
     <div v-if="currentHoliday === 'christmas'">
-      <!-- Flying Santa -->
+      <!-- Flying Santa with enhanced shadow -->
       <div 
         v-if="showSanta"
-        class="absolute z-10 text-6xl filter drop-shadow-lg transition-transform will-change-transform"
+        class="absolute z-10 text-7xl filter drop-shadow-2xl transition-transform will-change-transform"
         :style="{ transform: `translate(${santaX}px, ${santaY}px) rotate(10deg)` }"
       >
         🎅🛷🦌
       </div>
 
-      <!-- Decorative Trees (Bottom Corners) -->
-      <div class="fixed bottom-0 left-4 text-6xl opacity-80 animate-bounce-slow">🎄</div>
-      <div class="fixed bottom-0 right-4 text-6xl opacity-80 animate-bounce-slow" style="animation-delay: 1s;">🎄</div>
+      <!-- Decorative Trees (Bottom Corners) with enhanced styling -->
+      <div class="fixed bottom-0 left-6 text-7xl opacity-90 animate-bounce-slow drop-shadow-2xl">🎄</div>
+      <div class="fixed bottom-0 right-6 text-7xl opacity-90 animate-bounce-slow drop-shadow-2xl" style="animation-delay: 1s;">🎄</div>
     </div>
   </div>
 </template>
@@ -170,7 +175,7 @@ onUnmounted(() => {
 <style scoped>
 @keyframes bounce-slow {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-15px); }
 }
 .animate-bounce-slow {
   animation: bounce-slow 3s infinite ease-in-out;
