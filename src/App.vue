@@ -6,9 +6,22 @@ import ScrollCar from './components/ScrollCar.vue';
 import HolidayOverlay from './components/HolidayOverlay.vue';
 import ClickSpark from './components/ClickSpark.vue';
 import { Promotion, Position, OfficeBuilding, ChatDotRound } from '@element-plus/icons-vue';
+import { useAuthStore } from './stores/auth';
+import { useRouter } from 'vue-router';
 
 const route = useRoute()
-const isAuthPage = computed(() => ['/login'].includes(route.path))
+const router = useRouter()
+const auth = useAuthStore()
+const isAuthPage = computed(() => ['/login', '/auth/candidate', '/auth/company'].includes(route.path))
+
+const goLogin = () => router.push('/auth/candidate')
+const goCompanyAuth = () => router.push('/auth/company')
+const goResume = () => router.push('/resume-builder')
+const goJobBuilder = () => router.push('/job-builder')
+const logout = () => {
+  auth.logout()
+  router.push('/')
+}
 </script>
 
 <template>
@@ -56,16 +69,42 @@ const isAuthPage = computed(() => ['/login'].includes(route.path))
         </div>
         
         <div class="flex items-center space-x-3">
-          <RouterLink to="/login">
-            <button class="text-sm font-bold text-slate-600 hover:text-slate-900 transition-all duration-300 px-5 py-2.5 rounded-xl hover:bg-gradient-to-r hover:from-slate-50 hover:to-blue-50 relative overflow-hidden group">
-              <span class="relative z-10">登录</span>
+          <template v-if="!auth.isAuthed">
+            <button @click="goLogin" class="text-sm font-bold text-slate-600 hover:text-slate-900 transition-all duration-300 px-5 py-2.5 rounded-xl hover:bg-gradient-to-r hover:from-slate-50 hover:to-blue-50 relative overflow-hidden group">
+              <span class="relative z-10">候选人登录</span>
               <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
-          </RouterLink>
-          <button class="px-6 py-2.5 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-size-200 bg-pos-0 hover:bg-pos-100 text-white rounded-xl font-bold text-sm shadow-lg shadow-slate-900/30 hover:shadow-xl hover:shadow-blue-900/40 hover:-translate-y-0.5 transition-all duration-300 border border-transparent relative overflow-hidden group">
-            <span class="relative z-10">企业入驻</span>
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </button>
+            <button @click="goCompanyAuth" class="px-6 py-2.5 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-size-200 bg-pos-0 hover:bg-pos-100 text-white rounded-xl font-bold text-sm shadow-lg shadow-slate-900/30 hover:shadow-xl hover:shadow-blue-900/40 hover:-translate-y-0.5 transition-all duration-300 border border-transparent relative overflow-hidden group">
+              <span class="relative z-10">企业入驻</span>
+              <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+          </template>
+
+          <template v-else>
+            <button
+              v-if="auth.role === 'candidate'"
+              @click="goResume"
+              class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-600/30 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+            >
+              简历生成器
+            </button>
+            <button
+              v-else
+              @click="goJobBuilder"
+              class="px-6 py-2.5 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 text-white rounded-xl font-bold text-sm shadow-lg shadow-slate-900/30 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+            >
+              岗位生成器
+            </button>
+
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-bold text-slate-700 bg-white/70 backdrop-blur px-4 py-2 rounded-xl border border-white/50">
+                {{ auth.user?.companyName || auth.user?.displayName || auth.user?.email || auth.user?.phone }}
+              </span>
+              <button @click="logout" class="text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors px-3 py-2 rounded-xl hover:bg-slate-50">
+                退出
+              </button>
+            </div>
+          </template>
         </div>
       </nav>
     </header>
