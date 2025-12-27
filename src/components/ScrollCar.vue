@@ -2,7 +2,6 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const scrollProgress = ref(0);
-// const carRef = ref<HTMLElement | null>(null);
 
 const updateScroll = () => {
   const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
@@ -21,37 +20,41 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="fixed bottom-8 left-0 w-full px-8 pointer-events-none z-40 hidden md:block">
-    <!-- Road Line -->
-    <div class="absolute bottom-3 left-0 w-full h-0.5 bg-slate-200"></div>
+  <div class="fixed bottom-10 left-0 w-full px-8 pointer-events-none z-40 hidden md:block">
+    <!-- Road Line with gradient -->
+    <div class="absolute bottom-4 left-0 w-full h-1 bg-gradient-to-r from-slate-200 via-blue-200 to-slate-200 rounded-full shadow-sm"></div>
     
     <!-- The Car -->
       <div 
-        
-        class="relative w-16 h-10 transition-all duration-100 ease-out will-change-transform"
+        class="relative w-20 h-12 transition-all duration-100 ease-out will-change-transform drop-shadow-2xl"
         :style="{ left: `${scrollProgress}%` }"
       >
-      <!-- Car Body (Simple CSS Art) -->
+      <!-- Car Body (Enhanced CSS Art) -->
       <div class="absolute bottom-0 w-full h-full">
-        <!-- Roof -->
-        <div class="absolute top-0 left-2 w-10 h-5 bg-blue-500 rounded-t-lg"></div>
-        <!-- Main Body -->
-        <div class="absolute bottom-1 w-16 h-5 bg-blue-600 rounded-lg shadow-lg"></div>
-        <!-- Sensor (LiDAR) -->
-        <div class="absolute -top-2 left-6 w-3 h-2 bg-slate-800 animate-spin-slow rounded-sm"></div>
-        <!-- Wheels -->
-        <div class="absolute bottom-0 left-2 w-3 h-3 bg-slate-800 rounded-full animate-spin-roll"></div>
-        <div class="absolute bottom-0 right-2 w-3 h-3 bg-slate-800 rounded-full animate-spin-roll"></div>
-        <!-- Lights -->
-        <div class="absolute bottom-3 right-0 w-1 h-2 bg-yellow-400 rounded-r-sm shadow-[0_0_10px_#facc15]"></div>
+        <!-- Roof with gradient -->
+        <div class="absolute top-0 left-3 w-12 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-t-xl shadow-lg"></div>
+        <!-- Main Body with gradient -->
+        <div class="absolute bottom-1 w-20 h-6 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl shadow-2xl shadow-blue-500/50"></div>
+        <!-- Sensor (LiDAR) with glow -->
+        <div class="absolute -top-3 left-7 w-4 h-3 bg-gradient-to-br from-slate-800 to-slate-900 animate-spin-slow rounded-lg shadow-lg shadow-slate-900/50"></div>
+        <!-- Wheels with enhanced style -->
+        <div class="absolute bottom-0 left-3 w-4 h-4 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full animate-spin-roll shadow-md"></div>
+        <div class="absolute bottom-0 right-3 w-4 h-4 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full animate-spin-roll shadow-md"></div>
+        <!-- Lights with enhanced glow -->
+        <div class="absolute bottom-4 right-0 w-2 h-3 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-r-lg shadow-[0_0_15px_#facc15] animate-pulse-slow"></div>
+        <!-- Front glass -->
+        <div class="absolute top-1 left-4 w-10 h-4 bg-gradient-to-b from-blue-300/30 to-transparent rounded-t-lg"></div>
       </div>
       
-      <!-- Speech Bubble (Fun Factor) -->
-      <div v-if="scrollProgress > 95" class="absolute -top-12 left-0 bg-white px-3 py-1 rounded-lg shadow-md text-xs font-bold text-blue-600 whitespace-nowrap animate-bounce">
-        到达终点! 🏁
+      <!-- Speech Bubble (Fun Factor) with enhanced styling -->
+      <div v-if="scrollProgress > 95" class="absolute -top-16 left-0 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-2xl shadow-xl text-sm font-bold whitespace-nowrap animate-bounce">
+        到达终点! 🏁✨
       </div>
-      <div v-else-if="scrollProgress > 50 && scrollProgress < 55" class="absolute -top-12 left-0 bg-white px-3 py-1 rounded-lg shadow-md text-xs font-bold text-blue-600 whitespace-nowrap animate-pulse">
-        正在巡航... 🚗
+      <div v-else-if="scrollProgress > 50 && scrollProgress < 55" class="absolute -top-16 left-0 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-2xl shadow-xl text-sm font-bold whitespace-nowrap animate-pulse">
+        正在巡航... 🚗💨
+      </div>
+      <div v-else-if="scrollProgress > 10 && scrollProgress < 15" class="absolute -top-16 left-0 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-2xl shadow-xl text-sm font-bold whitespace-nowrap animate-bounce">
+        加速中... ⚡
       </div>
     </div>
   </div>
@@ -70,7 +73,6 @@ onUnmounted(() => {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
-/* Bind animation speed to "velocity" ideally, but constant is ok for fun */
 .animate-spin-roll {
   animation: spin-roll 0.5s linear infinite;
 }

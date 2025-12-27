@@ -50,18 +50,22 @@ onUnmounted(() => {
   >
     <!-- Drone Body -->
     <div class="relative -translate-x-1/2 -translate-y-1/2">
-      <!-- Main Core -->
-      <div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm relative z-10 transition-all duration-300"
-           :class="isHovering ? 'scale-150 bg-orange-500' : ''"></div>
+      <!-- Main Core with enhanced gradient -->
+      <div class="w-5 h-5 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full border-2 border-white shadow-lg shadow-blue-500/50 relative z-10 transition-all duration-300"
+           :class="isHovering ? 'scale-[2] from-orange-500 to-pink-500 shadow-orange-500/50' : ''"></div>
       
       <!-- Rotors (Decorative) -->
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 border border-slate-300 rounded-full animate-spin-slow opacity-50"></div>
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 border border-blue-200 rounded-full animate-ping opacity-30" v-if="isClicking"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 border border-blue-300 rounded-full animate-spin-slow opacity-50"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 border-2 border-purple-300 rounded-full animate-ping opacity-40" v-if="isClicking"></div>
       
-      <!-- Label -->
-      <div class="absolute left-6 top-0 bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 transition-opacity"
-           :class="isHovering ? 'opacity-100' : ''">
-        TARGET_LOCKED
+      <!-- Glow effect -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-blue-500 rounded-full blur-xl opacity-30 transition-all duration-300"
+           :class="isHovering ? 'w-16 h-16 bg-orange-500 opacity-50' : ''"></div>
+      
+      <!-- Label with enhanced styling -->
+      <div class="absolute left-8 top-0 bg-gradient-to-r from-slate-800 to-slate-900 text-white text-[10px] px-3 py-1 rounded-full opacity-0 transition-all duration-300 shadow-lg font-bold"
+           :class="isHovering ? 'opacity-100 translate-x-1' : ''">
+        TARGET_LOCKED 🎯
       </div>
     </div>
   </div>

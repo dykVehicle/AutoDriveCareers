@@ -3,23 +3,23 @@ import { onMounted, onUnmounted } from 'vue';
 
 // const sparks: { x: number; y: number; color: string; id: number }[] = [];
 
-const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD'];
+const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981', '#f59e0b'];
 
 const createSpark = (e: MouseEvent) => {
   const container = document.getElementById('spark-container');
   if (!container) return;
 
-  const count = 8;
+  const count = 10;
   for (let i = 0; i < count; i++) {
     const el = document.createElement('div');
     el.classList.add('spark');
     el.style.left = `${e.clientX}px`;
     el.style.top = `${e.clientY}px`;
-    el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)] ?? '#FF6B6B';
+    el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)] ?? '#3b82f6';
     
     // Random direction
     const angle = (Math.PI * 2 * i) / count;
-    const velocity = Math.random() * 60 + 40;
+    const velocity = Math.random() * 70 + 50;
     const tx = Math.cos(angle) * velocity;
     const ty = Math.sin(angle) * velocity;
     
@@ -31,7 +31,7 @@ const createSpark = (e: MouseEvent) => {
     // Remove after animation
     setTimeout(() => {
       el.remove();
-    }, 600);
+    }, 700);
   }
 };
 
@@ -51,17 +51,21 @@ onUnmounted(() => {
 <style>
 .spark {
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   pointer-events: none;
-  animation: spark-fly 0.6s ease-out forwards;
+  animation: spark-fly 0.7s ease-out forwards;
+  box-shadow: 0 0 10px currentColor;
 }
 
 @keyframes spark-fly {
   0% {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
   }
   100% {
     transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0);
