@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { RouterView, RouterLink, useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useAuthStore } from './stores/auth'
 import SensorCursor from './components/SensorCursor.vue';
 import ScrollCar from './components/ScrollCar.vue';
 import HolidayOverlay from './components/HolidayOverlay.vue';
 import ClickSpark from './components/ClickSpark.vue';
-import { Promotion, Position, OfficeBuilding, ChatDotRound } from '@element-plus/icons-vue';
+import { Promotion, Position, OfficeBuilding, ChatDotRound, Document } from '@element-plus/icons-vue';
 
 const route = useRoute()
-const isAuthPage = computed(() => ['/login'].includes(route.path))
+const authStore = useAuthStore()
+const isAuthPage = computed(() => ['/login', '/company-login', '/resume-builder', '/job-builder'].includes(route.path))
+
+onMounted(() => {
+  authStore.initAuth()
+})
 </script>
 
 <template>
@@ -52,20 +58,49 @@ const isAuthPage = computed(() => ['/login'].includes(route.path))
                 <span>职位列表</span>
               </span>
             </RouterLink>
+            <RouterLink v-if="authStore.isAuthenticated && authStore.user?.type === 'candidate'" to="/resume-builder" class="nav-item" active-class="active">
+              <span class="flex items-center gap-2">
+                <span>✨</span>
+                <span>生成简历</span>
+              </span>
+            </RouterLink>
+            <RouterLink v-if="authStore.isAuthenticated && authStore.user?.type === 'company'" to="/job-builder" class="nav-item" active-class="active">
+              <span class="flex items-center gap-2">
+                <span>🚀</span>
+                <span>发布岗位</span>
+              </span>
+            </RouterLink>
           </div>
         </div>
         
         <div class="flex items-center space-x-3">
-          <RouterLink to="/login">
-            <button class="text-sm font-bold text-slate-600 hover:text-slate-900 transition-all duration-300 px-5 py-2.5 rounded-xl hover:bg-gradient-to-r hover:from-slate-50 hover:to-blue-50 relative overflow-hidden group">
-              <span class="relative z-10">登录</span>
-              <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </button>
-          </RouterLink>
-          <button class="px-6 py-2.5 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-size-200 bg-pos-0 hover:bg-pos-100 text-white rounded-xl font-bold text-sm shadow-lg shadow-slate-900/30 hover:shadow-xl hover:shadow-blue-900/40 hover:-translate-y-0.5 transition-all duration-300 border border-transparent relative overflow-hidden group">
-            <span class="relative z-10">企业入驻</span>
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </button>
+          <template v-if="authStore.isAuthenticated">
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-medium text-slate-700">
+                {{ authStore.user?.type === 'candidate' ? authStore.user.name : authStore.user?.companyName }}
+              </span>
+              <button 
+                @click="authStore.logout"
+                class="text-sm font-bold text-slate-600 hover:text-red-600 transition-all duration-300 px-5 py-2.5 rounded-xl hover:bg-red-50 relative overflow-hidden group"
+              >
+                <span class="relative z-10">退出登录</span>
+              </button>
+            </div>
+          </template>
+          <template v-else>
+            <RouterLink to="/login">
+              <button class="text-sm font-bold text-slate-600 hover:text-slate-900 transition-all duration-300 px-5 py-2.5 rounded-xl hover:bg-gradient-to-r hover:from-slate-50 hover:to-blue-50 relative overflow-hidden group">
+                <span class="relative z-10">候选人登录</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </button>
+            </RouterLink>
+            <RouterLink to="/company-login">
+              <button class="px-6 py-2.5 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-size-200 bg-pos-0 hover:bg-pos-100 text-white rounded-xl font-bold text-sm shadow-lg shadow-slate-900/30 hover:shadow-xl hover:shadow-blue-900/40 hover:-translate-y-0.5 transition-all duration-300 border border-transparent relative overflow-hidden group">
+                <span class="relative z-10">企业入驻</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </button>
+            </RouterLink>
+          </template>
         </div>
       </nav>
     </header>
@@ -109,8 +144,18 @@ const isAuthPage = computed(() => ['/login'].includes(route.path))
           <div class="col-span-1 md:col-span-2 md:col-start-6">
             <h4 class="text-slate-900 font-bold mb-6 text-sm uppercase tracking-wider">求职者</h4>
             <ul class="space-y-4 text-sm text-slate-600 font-medium">
-              <li><a href="#" class="hover:text-blue-600 transition-colors flex items-center group"><el-icon class="mr-2 text-base group-hover:scale-110 transition-transform"><Position /></el-icon> <span class="group-hover:translate-x-1 transition-transform">浏览职位</span></a></li>
-              <li><a href="#" class="hover:text-blue-600 transition-colors flex items-center group"><el-icon class="mr-2 text-base group-hover:scale-110 transition-transform"><OfficeBuilding /></el-icon> <span class="group-hover:translate-x-1 transition-transform">热门公司</span></a></li>
+              <li>
+                <RouterLink to="/jobs" class="hover:text-blue-600 transition-colors flex items-center group">
+                  <el-icon class="mr-2 text-base group-hover:scale-110 transition-transform"><Position /></el-icon>
+                  <span class="group-hover:translate-x-1 transition-transform">浏览职位</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink to="/resume-builder" class="hover:text-blue-600 transition-colors flex items-center group">
+                  <el-icon class="mr-2 text-base group-hover:scale-110 transition-transform"><Document /></el-icon>
+                  <span class="group-hover:translate-x-1 transition-transform">生成简历</span>
+                </RouterLink>
+              </li>
               <li><a href="#" class="hover:text-blue-600 transition-colors flex items-center group"><el-icon class="mr-2 text-base group-hover:scale-110 transition-transform"><Promotion /></el-icon> <span class="group-hover:translate-x-1 transition-transform">求职攻略</span></a></li>
             </ul>
           </div>
@@ -118,8 +163,16 @@ const isAuthPage = computed(() => ['/login'].includes(route.path))
           <div class="col-span-1 md:col-span-2">
             <h4 class="text-slate-900 font-bold mb-6 text-sm uppercase tracking-wider">企业服务</h4>
             <ul class="space-y-4 text-sm text-slate-600 font-medium">
-              <li><a href="#" class="hover:text-blue-600 transition-all flex items-center group"><span class="group-hover:translate-x-1 transition-transform">发布职位</span></a></li>
-              <li><a href="#" class="hover:text-blue-600 transition-all flex items-center group"><span class="group-hover:translate-x-1 transition-transform">人才搜索</span></a></li>
+              <li>
+                <RouterLink to="/job-builder" class="hover:text-blue-600 transition-all flex items-center group">
+                  <span class="group-hover:translate-x-1 transition-transform">发布职位</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink to="/company-login" class="hover:text-blue-600 transition-all flex items-center group">
+                  <span class="group-hover:translate-x-1 transition-transform">企业入驻</span>
+                </RouterLink>
+              </li>
               <li><a href="#" class="hover:text-blue-600 transition-all flex items-center group"><span class="group-hover:translate-x-1 transition-transform">雇主品牌</span></a></li>
             </ul>
           </div>
