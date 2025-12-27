@@ -52,6 +52,18 @@ const isAuthPage = computed(() => ['/login'].includes(route.path))
                 <span>职位列表</span>
               </span>
             </RouterLink>
+            <RouterLink to="/resume-generator" class="nav-item" active-class="active">
+              <span class="flex items-center gap-2">
+                <span>✨</span>
+                <span>简历优化</span>
+              </span>
+            </RouterLink>
+            <RouterLink to="/job-post-generator" class="nav-item" active-class="active">
+              <span class="flex items-center gap-2">
+                <span>⚡</span>
+                <span>智能发布</span>
+              </span>
+            </RouterLink>
           </div>
         </div>
         

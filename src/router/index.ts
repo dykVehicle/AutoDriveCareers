@@ -26,6 +26,16 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/resume-generator',
+      name: 'resume-generator',
+      component: () => import('../views/ResumeGenerator.vue')
+    },
+    {
+      path: '/job-post-generator',
+      name: 'job-post-generator',
+      component: () => import('../views/JobPostGenerator.vue')
     }
   ],
   scrollBehavior(_to, _from, savedPosition) {
