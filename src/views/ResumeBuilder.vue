@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus';
 import { useAuthStore } from '../stores/auth';
 import { copyText } from '../services/clipboard';
 import { parseResumeText, resumeToMarkdown, type ResumeDoc } from '../services/resume';
+import { exportResumeToPDF, exportResumeToWord } from '../services/export';
 
 const auth = useAuthStore();
 
@@ -67,6 +68,28 @@ const printResume = () => {
   window.print();
 };
 
+const exportPDF = async () => {
+  if (!parsed.value) return ElMessage.warning('请先生成简历');
+  try {
+    await exportResumeToPDF(parsed.value);
+    ElMessage.success('PDF 导出成功');
+  } catch (error) {
+    console.error('PDF导出失败:', error);
+    ElMessage.error('PDF 导出失败，请重试');
+  }
+};
+
+const exportWord = async () => {
+  if (!parsed.value) return ElMessage.warning('请先生成简历');
+  try {
+    await exportResumeToWord(parsed.value);
+    ElMessage.success('Word 文档导出成功');
+  } catch (error) {
+    console.error('Word导出失败:', error);
+    ElMessage.error('Word 导出失败，请重试');
+  }
+};
+
 const headerTitle = computed(() => {
   const b = parsed.value?.basics;
   return b?.name ? `${b.name} · 简历` : '简历预览';
@@ -110,7 +133,12 @@ watch(rawText, () => {
 
               <div class="flex gap-3">
                 <button class="btn btn-secondary flex-1" @click="copyMd">复制 Markdown</button>
-                <button class="btn btn-secondary flex-1" @click="printResume">打印 / 导出PDF</button>
+                <button class="btn btn-secondary flex-1" @click="printResume">打印简历</button>
+              </div>
+
+              <div class="flex gap-3">
+                <button class="btn btn-primary flex-1" @click="exportPDF">📄 导出 PDF</button>
+                <button class="btn btn-primary flex-1" @click="exportWord">📝 导出 Word</button>
               </div>
 
               <div class="flex items-center gap-3">

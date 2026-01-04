@@ -48,7 +48,7 @@ const startCooldown = (sec = 60) => {
 const sendCode = async () => {
   try {
     codeSending.value = true;
-    const rec = auth.sendCandidateEmailCode(form.value.email);
+    const rec = await auth.sendCandidateEmailCode(form.value.email);
     // 演示环境：直接弹出验证码
     ElMessage.success(`验证码已发送（演示）：${rec.code}（5分钟内有效）`);
     startCooldown(60);
