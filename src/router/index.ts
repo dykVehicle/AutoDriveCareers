@@ -49,6 +49,12 @@ const router = createRouter({
       name: 'job-builder',
       component: () => import('../views/JobBuilder.vue'),
       meta: { requiresAuth: true, role: 'company' }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/Profile.vue'),
+      meta: { requiresAuth: true, role: 'candidate' }
     }
   ],
   scrollBehavior(_to, _from, savedPosition) {

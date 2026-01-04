@@ -48,9 +48,19 @@ const startCooldown = (sec = 60) => {
 const sendCode = async () => {
   try {
     codeSending.value = true;
-    const rec = auth.sendCandidateEmailCode(form.value.email);
-    // 演示环境：直接弹出验证码
-    ElMessage.success(`验证码已发送（演示）：${rec.code}（5分钟内有效）`);
+    const rec = await auth.sendCandidateEmailCode(form.value.email);
+    
+    // 检查是否配置了真实邮件服务
+    const emailConfigured = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+    
+    if (emailConfigured) {
+      // 真实邮件已发送
+      ElMessage.success('验证码已发送到您的邮箱，请查收（5分钟内有效）');
+    } else {
+      // 开发模式：显示验证码
+      ElMessage.success(`验证码：${rec.code}（5分钟内有效）\n提示：配置EmailJS后可发送真实邮件`);
+    }
+    
     startCooldown(60);
   } catch (e: any) {
     ElMessage.error(e?.message || '发送验证码失败');

@@ -44,8 +44,8 @@ export const useAuthStore = defineStore('auth', {
       this.user = null;
     },
 
-    sendCandidateEmailCode(email: string) {
-      return sendEmailCode(email);
+    async sendCandidateEmailCode(email: string) {
+      return await sendEmailCode(email);
     },
 
     async register(params: {

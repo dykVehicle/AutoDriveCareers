@@ -1,4 +1,6 @@
 import { loadFromStorage, saveToStorage } from './storage';
+import { authApi, useServerStorage } from './api';
+import { sendVerificationEmail, isEmailConfigured } from './email';
 
 export type AuthRole = 'candidate' | 'company';
 export type AuthMethod = 'email' | 'phone';
@@ -115,11 +117,28 @@ export function clearSession() {
   saveSession(null);
 }
 
-export function sendEmailCode(email: string, ttlMs = 5 * 60 * 1000): EmailCodeRecord {
+export async function sendEmailCode(email: string, ttlMs = 5 * 60 * 1000): Promise<EmailCodeRecord> {
   const normalized = normalizeEmail(email);
   if (!isValidEmail(normalized)) {
     throw new Error('邮箱格式不正确');
   }
+
+  // 如果配置了服务器端存储，使用API
+  if (useServerStorage()) {
+    const response = await authApi.sendEmailCode(normalized);
+    if (!response.success || !response.data) {
+      throw new Error(response.error || '发送验证码失败');
+    }
+    // 返回一个模拟的EmailCodeRecord（实际验证码在服务器端）
+    return {
+      email: normalized,
+      code: response.data.code,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + ttlMs
+    };
+  }
+
+  // 使用本地存储
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const rec: EmailCodeRecord = {
     email: normalized,
@@ -130,6 +149,19 @@ export function sendEmailCode(email: string, ttlMs = 5 * 60 * 1000): EmailCodeRe
   const all = loadFromStorage<Record<string, EmailCodeRecord>>(EMAIL_CODES_KEY, {});
   all[normalized] = rec;
   saveToStorage(EMAIL_CODES_KEY, all);
+
+  // 尝试发送真实邮件
+  if (isEmailConfigured()) {
+    try {
+      const sent = await sendVerificationEmail(normalized, code);
+      if (sent) {
+        console.log('验证码已通过邮件发送');
+      }
+    } catch (error) {
+      console.warn('邮件发送失败，但验证码已生成:', error);
+    }
+  }
+
   return rec;
 }
 
@@ -153,6 +185,36 @@ export async function registerUser(params: {
   contactName?: string;
   emailCode?: string;
 }): Promise<StoredUser> {
+  // 如果配置了服务器端存储，使用API
+  if (useServerStorage()) {
+    const response = await authApi.register({
+      role: params.role,
+      email: params.email,
+      phone: params.phone,
+      password: params.password,
+      displayName: params.displayName,
+      companyName: params.companyName,
+      contactName: params.contactName,
+      emailCode: params.emailCode
+    });
+
+    if (!response.success || !response.data) {
+      throw new Error(response.error || '注册失败');
+    }
+
+    // 保存token到session
+    const session: AuthSession = {
+      token: response.data.token,
+      userId: response.data.user.id,
+      role: response.data.user.role,
+      createdAt: Date.now()
+    };
+    saveSession(session);
+
+    return response.data.user;
+  }
+
+  // 使用本地存储
   const users = loadUsers();
 
   const passwordHash = await hashPassword(params.password);
@@ -196,6 +258,32 @@ export async function login(params: {
   identifier: { email?: string; phone?: string };
   password: string;
 }): Promise<StoredUser> {
+  // 如果配置了服务器端存储，使用API
+  if (useServerStorage()) {
+    const response = await authApi.login({
+      role: params.role,
+      email: params.identifier.email,
+      phone: params.identifier.phone,
+      password: params.password
+    });
+
+    if (!response.success || !response.data) {
+      throw new Error(response.error || '登录失败');
+    }
+
+    // 保存token到session
+    const session: AuthSession = {
+      token: response.data.token,
+      userId: response.data.user.id,
+      role: response.data.user.role,
+      createdAt: Date.now()
+    };
+    saveSession(session);
+
+    return response.data.user;
+  }
+
+  // 使用本地存储
   const user = findUserByIdentifier(params.role, params.identifier);
   if (!user) throw new Error('账号不存在或角色不匹配');
   const passwordHash = await hashPassword(params.password);
