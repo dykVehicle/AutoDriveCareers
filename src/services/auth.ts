@@ -1,5 +1,6 @@
 import { loadFromStorage, saveToStorage } from './storage';
 import { authApi, useServerStorage } from './api';
+import { sendVerificationEmail, isEmailConfigured } from './email';
 
 export type AuthRole = 'candidate' | 'company';
 export type AuthMethod = 'email' | 'phone';
@@ -148,6 +149,19 @@ export async function sendEmailCode(email: string, ttlMs = 5 * 60 * 1000): Promi
   const all = loadFromStorage<Record<string, EmailCodeRecord>>(EMAIL_CODES_KEY, {});
   all[normalized] = rec;
   saveToStorage(EMAIL_CODES_KEY, all);
+
+  // 尝试发送真实邮件
+  if (isEmailConfigured()) {
+    try {
+      const sent = await sendVerificationEmail(normalized, code);
+      if (sent) {
+        console.log('验证码已通过邮件发送');
+      }
+    } catch (error) {
+      console.warn('邮件发送失败，但验证码已生成:', error);
+    }
+  }
+
   return rec;
 }
 

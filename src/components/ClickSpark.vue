@@ -45,7 +45,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div id="spark-container" class="fixed inset-0 pointer-events-none z-[9999]"></div>
+  <div id="spark-container" class="fixed inset-0 pointer-events-none z-[999]"></div>
 </template>
 
 <style>

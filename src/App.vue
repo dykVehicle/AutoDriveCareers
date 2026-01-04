@@ -97,7 +97,17 @@ const logout = () => {
             </button>
 
             <div class="flex items-center gap-3">
-              <span class="text-sm font-bold text-slate-700 bg-white/70 backdrop-blur px-4 py-2 rounded-xl border border-white/50">
+              <button
+                v-if="auth.role === 'candidate'"
+                @click="router.push('/profile')"
+                class="text-sm font-bold text-slate-700 bg-white/70 backdrop-blur px-4 py-2 rounded-xl border border-white/50 hover:border-blue-300 hover:shadow-lg transition-all duration-300"
+              >
+                👤 {{ auth.user?.displayName || auth.user?.email || auth.user?.phone }}
+              </button>
+              <span
+                v-else
+                class="text-sm font-bold text-slate-700 bg-white/70 backdrop-blur px-4 py-2 rounded-xl border border-white/50"
+              >
                 {{ auth.user?.companyName || auth.user?.displayName || auth.user?.email || auth.user?.phone }}
               </span>
               <button @click="logout" class="text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors px-3 py-2 rounded-xl hover:bg-slate-50">

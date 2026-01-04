@@ -1,17 +1,61 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useJobStore } from '../stores/jobs';
+import { useAuthStore } from '../stores/auth';
 import { Location, Suitcase, School, ArrowLeft, Star, Share } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import { saveJob, unsaveJob, isJobSaved } from '../services/favorites';
 
 const route = useRoute();
 const jobStore = useJobStore();
+const auth = useAuthStore();
 const jobId = Number(route.params.id);
 
 const job = computed(() => jobStore.getJobById(jobId));
 const goBack = () => window.history.back();
 
 const isBookmarked = ref(false);
+
+// 检查是否已收藏
+onMounted(() => {
+  if (auth.isAuthed && auth.role === 'candidate' && auth.user?.id) {
+    isBookmarked.value = isJobSaved(auth.user.id, String(jobId));
+  }
+});
+
+// 切换收藏状态
+const toggleBookmark = () => {
+  if (!auth.isAuthed) {
+    ElMessage.warning('请先登录');
+    return;
+  }
+  
+  if (auth.role !== 'candidate') {
+    ElMessage.warning('仅候选人可以收藏职位');
+    return;
+  }
+
+  if (!job.value || !auth.user?.id) return;
+
+  if (isBookmarked.value) {
+    // 取消收藏
+    unsaveJob(auth.user.id, String(jobId));
+    isBookmarked.value = false;
+    ElMessage.success('已取消收藏');
+  } else {
+    // 添加收藏
+    saveJob(auth.user.id, {
+      id: String(jobId),
+      title: job.value.title,
+      company: job.value.company,
+      location: job.value.location,
+      salary: job.value.salary
+    });
+    isBookmarked.value = true;
+    ElMessage.success('已添加到收藏');
+  }
+};
 </script>
 
 <template>
@@ -147,8 +191,8 @@ const isBookmarked = ref(false);
                   <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
                 </button>
                 <div class="flex gap-3">
-                  <button @click="isBookmarked = !isBookmarked" class="flex-1 py-3.5 bg-white border-2 border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-2 group hover:scale-105">
-                    <el-icon :class="isBookmarked ? 'text-yellow-500' : ''" class="group-hover:scale-110 transition-transform"><Star /></el-icon> 
+                  <button @click="toggleBookmark" :class="isBookmarked ? 'border-yellow-400 bg-yellow-50' : 'border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50'" class="flex-1 py-3.5 border-2 text-slate-700 hover:text-blue-700 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-2 group hover:scale-105">
+                    <el-icon :class="isBookmarked ? 'text-yellow-500' : ''" class="group-hover:scale-110 transition-transform"><Star :filled="isBookmarked" /></el-icon> 
                     <span>{{ isBookmarked ? '已收藏' : '收藏' }}</span>
                   </button>
                   <button class="flex-1 py-3.5 bg-white border-2 border-slate-200 text-slate-700 hover:border-purple-300 hover:text-purple-700 hover:bg-purple-50 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-2 group hover:scale-105">

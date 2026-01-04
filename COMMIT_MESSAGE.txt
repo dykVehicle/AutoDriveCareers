@@ -1,0 +1,26 @@
+feat: 添加个人中心、简历导出、职位收藏和邮件服务功能
+
+主要更新：
+
+✨ 新增功能
+- 个人中心页面：管理简历和收藏职位
+- 简历导出：支持PDF和Word格式导出
+- 职位收藏：收藏感兴趣的职位
+- 邮件服务：集成EmailJS真实邮件发送
+- 数据持久化：支持本地和服务器双模式
+
+🐛 Bug修复
+- 修复页面遮挡问题（优化z-index）
+- 修复TypeScript类型错误
+- 优化用户体验和导航流程
+
+📝 新增文件
+- src/views/Profile.vue - 个人中心页面
+- src/services/favorites.ts - 收藏管理服务
+- src/services/email.ts - 邮件发送服务
+- CHANGELOG.md - 更新日志
+- DEPLOYMENT_GUIDE.md - 部署指南
+- FINAL_SUMMARY.md - 完成总结
+- QUICK_START.md - 快速开始指南
+
+详细内容请查看 CHANGELOG.md 和 FINAL_SUMMARY.md

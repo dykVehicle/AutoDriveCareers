@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/auth';
 import { copyText } from '../services/clipboard';
 import { parseResumeText, resumeToMarkdown, type ResumeDoc } from '../services/resume';
 import { exportResumeToPDF, exportResumeToWord } from '../services/export';
+import { saveResume, getResume } from '../services/favorites';
 
 const auth = useAuthStore();
 
@@ -47,6 +48,12 @@ const generate = () => {
     return;
   }
   parsed.value = parseResumeText(rawText.value);
+  
+  // 保存到个人中心
+  if (auth.isAuthed && auth.user?.id) {
+    saveResume(auth.user.id, parsed.value);
+  }
+  
   ElMessage.success('已生成精美简历预览');
 };
 
@@ -97,8 +104,15 @@ const headerTitle = computed(() => {
 
 onMounted(() => {
   if (!auth.isAuthed || auth.role !== 'candidate') return;
-  // nice default
-  rawText.value = '';
+  
+  // 加载之前保存的简历
+  if (auth.user?.id) {
+    const savedResumeData = getResume(auth.user.id);
+    if (savedResumeData) {
+      parsed.value = savedResumeData;
+      ElMessage.info('已加载您的简历');
+    }
+  }
 });
 
 watch(rawText, () => {
